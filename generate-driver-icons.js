@@ -1,0 +1,91 @@
+import fs from 'fs';
+import sharp from 'sharp';
+
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="45%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.45"/>
+      <stop offset="70%" stop-color="#2563eb" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#1e40af" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wheelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle circular aura inside icon -->
+  <circle cx="256" cy="256" r="210" fill="url(#glow)"/>
+  <circle cx="256" cy="256" r="165" fill="#3b82f6" opacity="0.3"/>
+
+  <!-- Steering Wheel Group -->
+  <g filter="url(#shadow)">
+    <!-- Outer Steering Wheel Ring -->
+    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#wheelGrad)" stroke-width="36" stroke-linecap="round"/>
+
+    <!-- Central Hub -->
+    <circle cx="256" cy="256" r="44" fill="#ffffff"/>
+
+    <!-- Left Spoke -->
+    <path d="M 120 256 L 220 256 C 220 266 230 274 240 274 L 120 274 Z" fill="#ffffff"/>
+    <rect x="110" y="242" width="115" height="28" rx="8" fill="#ffffff"/>
+
+    <!-- Right Spoke -->
+    <rect x="287" y="242" width="115" height="28" rx="8" fill="#ffffff"/>
+
+    <!-- Bottom Spoke -->
+    <rect x="242" y="287" width="28" height="115" rx="8" fill="#ffffff"/>
+
+    <!-- Center Inner Hole -->
+    <circle cx="256" cy="256" r="22" fill="#2563eb"/>
+
+    <!-- Mountains in background of road -->
+    <path d="M 285 305 L 320 282 L 350 305 L 380 280 L 415 310 Z" fill="#93c5fd" opacity="0.85"/>
+
+    <!-- Curving Highway Road extending from pencil -->
+    <path d="M 265 295 C 290 320 320 330 350 365 C 370 388 395 405 425 410 L 375 415 C 345 400 320 375 295 340 Z" fill="#ffffff"/>
+    <!-- Road Dashes -->
+    <path d="M 310 330 C 330 350 350 370 375 395" stroke="#3b82f6" stroke-width="5" stroke-dasharray="8 6" fill="none"/>
+
+    <!-- Pencil / Stylus -->
+    <!-- Pencil Body (angle pointing ~45deg down-right) -->
+    <g transform="translate(256, 256) rotate(45) translate(-256, -256)">
+      <!-- Pencil Body -->
+      <path d="M 244 190 L 268 190 L 268 310 L 244 310 Z" fill="#ffffff"/>
+      <path d="M 244 190 Q 256 175 268 190 Z" fill="#e2e8f0"/>
+      <!-- Pencil Tip / Cone -->
+      <path d="M 244 310 L 256 340 L 268 310 Z" fill="#f8fafc"/>
+      <!-- Pencil Graphite Point -->
+      <path d="M 251 328 L 256 340 L 261 328 Z" fill="#1e293b"/>
+      <!-- Pencil stripes/details -->
+      <line x1="252" y1="195" x2="252" y2="305" stroke="#cbd5e1" stroke-width="2"/>
+      <line x1="260" y1="195" x2="260" y2="305" stroke="#cbd5e1" stroke-width="2"/>
+    </g>
+  </g>
+</svg>`;
+
+async function run() {
+  fs.writeFileSync('./public/icon.svg', svg);
+  console.log('Created public/icon.svg');
+
+  const buf = Buffer.from(svg);
+  await sharp(buf).resize(192, 192).png().toFile('./public/pwa-192x192.png');
+  await sharp(buf).resize(512, 512).png().toFile('./public/pwa-512x512.png');
+  await sharp(buf).resize(512, 512).png().toFile('./public/pwa-maskable-512x512.png');
+  await sharp(buf).resize(180, 180).png().toFile('./public/apple-touch-icon.png');
+  await sharp(buf).resize(64, 64).png().toFile('./public/favicon.ico');
+  console.log('All icons generated successfully!');
+}
+
+run().catch(console.error);

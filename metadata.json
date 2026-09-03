@@ -1,0 +1,10 @@
+{
+  "name": "Gemini Web & Android PWA",
+  "description": "DRIVER NOTES - Painel financeiro e de jornadas para motoristas de aplicativo (Uber, 99, Particular) com metas, gastos e backup.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
